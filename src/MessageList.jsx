@@ -3,10 +3,14 @@ import Message from './Message.jsx';
 
 class MessageList extends Component {
   render() {
-    console.log("Rendering <MessageList/>");
+    // console.log(this.props.messages);
     return (
       <main className="messages">
-        <Message/>
+        {
+          this.props.messages.map( (m) => {
+            return (<Message key={m.id} username={m.username} content={m.content}/>)
+          })
+        }
         <div className="message system">
           Anonymous1 changed their name to nomnom.
         </div>
