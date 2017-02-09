@@ -12,8 +12,9 @@ module.exports = {
     filename: 'bundle.js',
     publicPath: '/build/'
   },
-  watchOptions {
-    poll: true
+  watchOptions: {
+    aggregateTimeout: 3000,
+    poll: 2000
   },
   module: {
     loaders: [

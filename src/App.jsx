@@ -3,61 +3,52 @@ import ChatBar from './ChatBar.jsx';
 import MessageList from './MessageList.jsx';
 
 class App extends Component {
-  constructor(props)
-  {
-    super(props);
-    this.state = {
-      currentUser: {name: "Bob"},
-      currentId: 3,
-      messages: [
-        {
-          id: 1,
-          username: "Bob",
-          content: "Has anyone seen my marbles?",
-        },
-        {
-          id: 2,
-          username: "Anonymous",
-          content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-        }
-      ]
-    }
-    // console.log(this.state.messages);
+  constructor(props) {
+   super(props);
+   this.state = {
+     currentUser: {name: "Anonymous"},
+     messages: [] // messages coming from the server will be stored here as they arrive
+   };
+  }
+
+  changeUsr(usr){
+    this.state.currentUser.name = usr;
+    return usr;
   }
 
   newMess(newMessage){
-    console.log("this state:",this.state);
-    const messages = this.state.messages.concat(newMessage);
-    console.log("messages",messages);
-    this.state.currentId += 1;
-    this.setState({messages: messages});
+    this.chatty_server.send(JSON.stringify(newMessage));
+    // this.chatty_server.onmessage = (event) => {
+    //   var data_in = JSON.parse(event.data);
+    //   const messages = this.state.messages.concat(data_in);
+    //   this.setState({messages: messages},()=>{
+    //     console.log(this.state.messages);
+    //   });
+    // }
+  }
+
+  componentDidMount() {
+    this.chatty_server = new WebSocket("ws://www.localhost:4000/socketserver");
+    this.chatty_server.onmessage = (event) => {
+      let messages;
+      var data_in = JSON.parse(event.data);
+      if(Array.isArray(data_in)){
+        messages = data_in;
+      } else {
+        messages = this.state.messages.concat(data_in);
+      }
+      this.setState({messages: messages})
+    }
   }
 
   render() {
     return (
       <div>
         <MessageList messages={this.state.messages} />
-        <ChatBar defaultValue={this.state.currentUser} newMess={this.newMess.bind(this)} currentId={this.state.currentId}/>
+        <ChatBar currentUser={this.state.currentUser.name} newMess={this.newMess.bind(this)} currentId={this.state.currentId}/>
       </div>
     );
   }
 }
 
 export default App;
-
-// componentDidMount() {
-//   // console.log("componentDidMount <App />");
-//   setTimeout(() => {
-//     // console.log("Simulating incoming message");
-//     // Add a new message to the list of messages in the data store
-//     const id = this.state.genId(this.state.messages);
-//     const newMessage = {
-//       messid: id,
-//       username: this.props.currentUser,
-//       content: this.props.message};
-//     const messages = this.state.messages.concat(newMessage)
-//     // Update the state of the app component.
-//     // Calling setState will trigger a call to render() in App and all child components.
-//     this.setState({messages: messages})
-//   }, 1000);
-// }
