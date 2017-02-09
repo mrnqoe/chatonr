@@ -20,11 +20,9 @@ class ChatBar extends Component {
     }
     event.keyCode === 13 ? (
       this.props.newMess(mess),
-      // console.log("mess:",mess),
       event.target.value = ""
     ):(
       this.state.value = event.target.value
-      // console.log("eventtarget:",event.target.value)
     )
   }
 

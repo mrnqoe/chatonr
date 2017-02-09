@@ -7,7 +7,7 @@ class App extends Component {
    super(props);
    this.state = {
      currentUser: {name: "Anonymous"},
-     messages: [] // messages coming from the server will be stored here as they arrive
+     messages: []
    };
   }
 
@@ -18,13 +18,6 @@ class App extends Component {
 
   newMess(newMessage){
     this.chatty_server.send(JSON.stringify(newMessage));
-    // this.chatty_server.onmessage = (event) => {
-    //   var data_in = JSON.parse(event.data);
-    //   const messages = this.state.messages.concat(data_in);
-    //   this.setState({messages: messages},()=>{
-    //     console.log(this.state.messages);
-    //   });
-    // }
   }
 
   componentDidMount() {
