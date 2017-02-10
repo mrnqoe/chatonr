@@ -7,9 +7,8 @@ class App extends Component {
    super(props);
    this.state = {
      currentUsr: {name: "Anonymous", color: "blue"},
-     color: "red",
      activity: [],
-     usersOn: 0,
+     usersOn: 0
    };
   }
 // function to changew user
@@ -22,14 +21,12 @@ class App extends Component {
         old_usr: _usr
       }
     }
-    console.log('Current user before socket throw: ', this.state.currentUsr.name);
     this.chatty_server.send(JSON.stringify(data_out));
   }
 // Funcxtion to create a new message item sent socket
   newMess(newMessage){
     let data_out = {
       type: 'message',
-      username: this.state.currentUsr,
       body: newMessage
     }
     this.chatty_server.send(JSON.stringify(data_out));
@@ -39,27 +36,28 @@ class App extends Component {
     this.chatty_server = new WebSocket("ws://www.localhost:4000/socketserver");
     this.chatty_server.onmessage = (event) => {
       const data_in = JSON.parse(event.data);
-      console.log("DATA_IN:",data_in);
       if(data_in.color){
-        this.state.currentUsr.color = data_in.color;
+        this.setState({currentUsr: {name: data_in.name, color: data_in.color}})
       }else if(data_in.count){
         this.setState({usersOn: data_in.count});
-        console.log("STATE AFTER USERR ON:",this.state);
-      }else if(data_in.activity){
-        this.setState({activity: this.state.activity.concat(data_in)});
       }else{
-        return 0;
+        this.setState({activity: this.state.activity.concat(data_in)});
       }
     }
-    console.log("Users on: ", this.state.usersOn);
   }
 
+  // componentWillUnmount() {
+  //   this.chatty_server.reconnect = false;
+  // }
+
   render() {
+    console.log('STATE:',this.state);
     return (
       <div>
         <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty</a>
-          <span>Users online : {this.state.usersOn}</span>
+          <a href="/" className="navbar-brand">Chatty
+            <span>Users online : {this.state.usersOn}</span>
+          </a>
         </nav>
         <Activity activity={this.state.activity}/>
         <ChatBar
@@ -71,6 +69,11 @@ class App extends Component {
         />
       </div>
     );
+  }
+
+  componentDidUpdate() {
+    var objDiv = document.getElementById("message-list");
+    objDiv.scrollTop = objDiv.scrollHeight;
   }
 }
 

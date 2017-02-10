@@ -2,15 +2,15 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css");
 
 body {
-  background: white;
-  color: black;
+  background: black;
+  color: white;
   font-family: 'Open Sans', sans-serif;
   font-size: 14px;
   margin: 70px 0;
 }
 
 .chatbar {
-  background: tomato;
+  background: darkgray;
   border-top: 1px solid black;
   bottom: 0;
   display: flex;
@@ -65,7 +65,7 @@ body {
 }
 
 .navbar {
-  background: tomato;
+  background: darkgray;
   border-bottom: 1px solid black;
   height: 60px;
   left: 0;
@@ -85,4 +85,8 @@ body {
   line-height: 60px;
   padding: 0 10px;
   text-decoration: none;
+}
+
+.navbar > a > span {
+  font-size: 0.5em;
 }

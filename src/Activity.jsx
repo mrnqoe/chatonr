@@ -4,9 +4,8 @@ import Notification from './Notification.jsx';
 
 class Activity extends Component {
   render() {
-    console.log(this.props.activity);
     return (
-      <main className="messages">
+      <main id="message-list" className="messages">
         {
           this.props.activity.map( (a) => {
             switch(a.type){

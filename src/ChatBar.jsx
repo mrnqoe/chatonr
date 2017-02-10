@@ -12,7 +12,6 @@ class ChatBar extends Component {
 
   handleUsr(event) {
     event.keyCode === 13 ? (
-      console.log(this.state.newUsr),
       this.props.changeUsr(this.state.usr, this.state.newUsr),
       this.setState({
         usr: this.state.newUsr,
@@ -31,11 +30,17 @@ class ChatBar extends Component {
       content: event.target.value,
       color: this.props.color
     }
-    if(this.state.newUsr){
-      // this.props.changeUsr(this.state.usr, this.state.newUsr);
-      mess.username = this.state.newUsr;
-    }
     event.keyCode === 13 ? (
+      this.state.newUsr ? (
+        this.props.changeUsr(this.state.usr, this.state.newUsr),
+        mess.username = this.state.newUsr,
+        this.setState({
+          usr: this.state.newUsr,
+          newUsr: ""
+        })
+      ):(
+        mess.username = this.props.currentUsr
+      ),
       this.props.newMess(mess),
       event.target.value = ""
     ):(
@@ -44,7 +49,6 @@ class ChatBar extends Component {
   }
 
   render() {
-    // console.log(this.state.value);
     return (
       <footer className="chatbar">
         <input
