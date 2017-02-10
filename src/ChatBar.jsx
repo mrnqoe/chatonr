@@ -4,25 +4,42 @@ class ChatBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: "",
-      usr: ""
+      content: "",
+      usr: this.props.currentUsr,
+      newUsr: ""
     }
   }
 
   handleUsr(event) {
-    this.state.usr = event.target.value
+    event.keyCode === 13 ? (
+      console.log(this.state.newUsr),
+      this.props.changeUsr(this.state.usr, this.state.newUsr),
+      this.setState({
+        usr: this.state.newUsr,
+        newUsr: ""
+      })
+    ):(
+      this.setState({
+        newUsr: event.target.value
+      })
+    )
   }
 
   handleSubmit(event) {
     const mess = {
       username: this.state.usr,
-      content: event.target.value
+      content: event.target.value,
+      color: this.props.color
+    }
+    if(this.state.newUsr){
+      // this.props.changeUsr(this.state.usr, this.state.newUsr);
+      mess.username = this.state.newUsr;
     }
     event.keyCode === 13 ? (
       this.props.newMess(mess),
       event.target.value = ""
     ):(
-      this.state.value = event.target.value
+      this.state.content = event.target.value
     )
   }
 
@@ -34,8 +51,8 @@ class ChatBar extends Component {
           className="chatbar-username"
           id="username"
           type="text"
-          onChange={this.handleUsr.bind(this)}
-          placeholder={this.props.currentUser} />
+          onKeyUp={this.handleUsr.bind(this)}
+          placeholder={this.props.currentUsr} />
 
         <input
           className="chatbar-message"

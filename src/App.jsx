@@ -1,44 +1,74 @@
 import React, {Component} from 'react';
 import ChatBar from './ChatBar.jsx';
-import MessageList from './MessageList.jsx';
+import Activity from './Activity.jsx';
 
 class App extends Component {
   constructor(props) {
    super(props);
    this.state = {
-     currentUser: {name: "Anonymous"},
-     messages: []
+     currentUsr: {name: "Anonymous", color: "blue"},
+     color: "red",
+     activity: [],
+     usersOn: 0,
    };
   }
-
-  changeUsr(usr){
-    this.state.currentUser.name = usr;
-    return usr;
+// function to changew user
+  changeUsr(_usr, usr){
+    this.state.currentUsr.name = usr;
+    let data_out = {
+      type: 'notification',
+      body: {
+        usr: usr,
+        old_usr: _usr
+      }
+    }
+    console.log('Current user before socket throw: ', this.state.currentUsr.name);
+    this.chatty_server.send(JSON.stringify(data_out));
   }
-
+// Funcxtion to create a new message item sent socket
   newMess(newMessage){
-    this.chatty_server.send(JSON.stringify(newMessage));
+    let data_out = {
+      type: 'message',
+      username: this.state.currentUsr,
+      body: newMessage
+    }
+    this.chatty_server.send(JSON.stringify(data_out));
   }
 
   componentDidMount() {
     this.chatty_server = new WebSocket("ws://www.localhost:4000/socketserver");
     this.chatty_server.onmessage = (event) => {
-      let messages;
-      var data_in = JSON.parse(event.data);
-      if(Array.isArray(data_in)){
-        messages = data_in;
-      } else {
-        messages = this.state.messages.concat(data_in);
+      const data_in = JSON.parse(event.data);
+      console.log("DATA_IN:",data_in);
+      if(data_in.color){
+        this.state.currentUsr.color = data_in.color;
+      }else if(data_in.count){
+        this.setState({usersOn: data_in.count});
+        console.log("STATE AFTER USERR ON:",this.state);
+      }else if(data_in.activity){
+        this.setState({activity: this.state.activity.concat(data_in)});
+      }else{
+        return 0;
       }
-      this.setState({messages: messages})
     }
+    console.log("Users on: ", this.state.usersOn);
   }
 
   render() {
     return (
       <div>
-        <MessageList messages={this.state.messages} />
-        <ChatBar currentUser={this.state.currentUser.name} newMess={this.newMess.bind(this)} currentId={this.state.currentId}/>
+        <nav className="navbar">
+          <a href="/" className="navbar-brand">Chatty</a>
+          <span>Users online : {this.state.usersOn}</span>
+        </nav>
+        <Activity activity={this.state.activity}/>
+        <ChatBar
+          color={this.state.currentUsr.color}
+          currentUsr={this.state.currentUsr.name}
+          changeUsr={this.changeUsr.bind(this)}
+          newMess={this.newMess.bind(this)}
+          currentId={this.state.currentId}
+        />
       </div>
     );
   }
